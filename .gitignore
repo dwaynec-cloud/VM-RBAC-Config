@@ -1,0 +1,4 @@
+main.json
+*.pem
+*.key
+.DS_Store
