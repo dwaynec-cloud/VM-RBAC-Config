@@ -51,6 +51,8 @@ Every control in this project was tested, not just configured:
 
 <img width="1496" height="835" alt="Verified Least Priviledge demo" src="https://github.com/user-attachments/assets/683ad0f3-13d9-4d05-a399-ece73254bd9d" />
 
+- Verified created user w
+
 <img width="685" height="421" alt="Require Tag Policy enforcement " src="https://github.com/user-attachments/assets/fd60f5bb-984e-4701-8c2c-fd5277a298fe" />
 
 <img width="1934" height="868" alt="Require Tag Policy enforcement 2" src="https://github.com/user-attachments/assets/7d2963e6-646a-427b-9868-80a06235991d" />
@@ -81,6 +83,6 @@ The custom RBAC role, tag policy, disk encryption, and cost budget are configure
 
 ## Next steps
 
-- Extend `main.bicep` to include the custom RBAC role, tag policy assignment, and cost budget as code, rather than manual Portal/CLI steps
+- Extend `main.bicep` to include the custom RBAC role, and cost budget as code, rather than manual Portal/CLI steps
 - Compare this hand-written template against an equivalent built from Azure Verified Modules
 - Project 2 will extend this VNet with a second subnet for private endpoints and a secured storage account
