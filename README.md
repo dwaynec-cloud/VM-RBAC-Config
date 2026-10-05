@@ -1,8 +1,8 @@
 # VM & RBAC Configuration (Project 1 of 6)
 
-Hands-on Azure lab built for AZ-104 (Microsoft Azure Administrator) preparation. It covers Azure infrastructure and security basics: deploying a virtual machine, securing it with a custom least-privilege RBAC role, enforcing tagging with Azure Policy, enabling Encryption at Host, and setting up cost monitoring with budget alerts. The VM, its networking, and the tag-policy assignment are defined as Infrastructure-as-Code in Bicep.
+Hands-on Azure lab built for AZ-104 (Microsoft Azure Administrator) preparation. It covers Azure infrastructure and security basics: deploying a virtual machine, securing it with a custom least-privilege RBAC role, enforcing tagging with Azure Policy, enabling Encryption at Host, and setting up cost monitoring with budget alerts. The VM and its networking are defined as Infrastructure-as-Code in Bicep.
 
-> Related repos: [VNet-Storage-Config](https://github.com/waynethedon/VNet-Storage-Config) (Project 2) · [Monitoring-Backup-Config](https://github.com/waynethedon/Monitoring-Backup-Config) (Project 3) · [Entra-Identity-Config](https://github.com/waynethedon/Entra-Identity-Config) (Project 4) · [AppService-Config](https://github.com/waynethedon/AppService-Config) (Project 5) · [Storage-Recovery-Config](https://github.com/waynethedon/Storage-Recovery-Config) (Project 6)
+> Related repos: [VNet-Storage-Config](https://github.com/dwaynec-cloud/VNet-Storage-Config) (Project 2) · [Monitoring-Backup-Config](https://github.com/dwaynec-cloud/Monitoring-Backup-Config) (Project 3) · [Entra-Identity-Config](https://github.com/dwaynec-cloud/Entra-Identity-Config) (Project 4) · [AppService-Config](https://github.com/dwaynec-cloud/AppService-Config) (Project 5) · [Storage-Recovery-Config](https://github.com/dwaynec-cloud/Storage-Recovery-Config) (Project 6)
 
 > **Status:** the lab environment was torn down in October 2026 when the Azure free trial ended. This repo is kept as documentation of the build.
 
@@ -15,10 +15,10 @@ Hands-on Azure lab built for AZ-104 (Microsoft Azure Administrator) preparation.
 - **Network Security Group**: inbound SSH allowed from a single known IP address; all other inbound internet traffic denied by default
 - **Virtual Machine**: Ubuntu Server 24.04 LTS, SSH key authentication only (no password authentication)
 - **Custom RBAC Role**: "VM Operator - No Delete", scoped to this one VM. It grants read, start, restart, deallocate, and power-off. Delete and configuration changes aren't included, and Azure RBAC denies any action a role doesn't grant
-- **Azure Policy**: Deny-effect policy requiring a `projects` tag on any new resource in the resource group
+- **Azure Policy**: Deny-effect policy requiring a `project` tag on any new resource in the resource group
 - **Encryption at Host**: enabled on the VM (chosen over Azure Disk Encryption; see Key decisions)
 - **Cost Budget**: $5/month scoped to the resource group, with email alerts at 80% and 100%
-- **Infrastructure as Code**: `main.bicep` defines the NSG, VNet/subnet, public IP, NIC, VM, and the tag-policy assignment. The custom role, Encryption at Host setting, and budget were configured through the Portal and CLI
+- **Infrastructure as Code**: `main.bicep` defines the NSG, VNet/subnet, public IP, NIC, and VM. The tag policy, custom role, Encryption at Host setting, and budget were configured through the Portal and CLI
 
 <img width="653" height="535" alt="Architecture diagram for rg-vmrbac-project" src="https://github.com/user-attachments/assets/e1b9e905-700d-4044-96f0-e5abb166e1ab" />
 
@@ -56,7 +56,7 @@ Neither is the same as quota, which is how many vCPUs the subscription is allowe
 Every control was tested, not just configured:
 
 - **RBAC:** signed in as the test user and confirmed they could view, start, and stop the VM, but got `Authorization failed` when attempting to delete it
-- **Tag policy:** attempted to create a resource without the `projects` tag in the resource group and was denied by the policy before deployment
+- **Tag policy:** attempted to create a resource without the required tag in the resource group and was denied by the policy before deployment
 - **Encryption at Host:** `az vm show --query securityProfile.encryptionAtHost` returned `true`
 - **Bicep template:** deployed end to end into a separate, clean resource group and confirmed SSH access to the resulting VM
 
@@ -79,7 +79,7 @@ Every control was tested, not just configured:
 ## How to deploy
 
 ```bash
-git clone https://github.com/waynethedon/VM-RBAC-Config.git
+git clone https://github.com/dwaynec-cloud/VM-RBAC-Config.git
 cd VM-RBAC-Config
 az login
 az group create --name <your-resource-group> --location <your-region>
@@ -89,10 +89,10 @@ az deployment group create \
   --parameters sshPublicKey="<your-ssh-public-key>"
 ```
 
-This deploys the VM, its networking, and the tag-policy assignment. The custom RBAC role, Encryption at Host setting, and cost budget are configured separately through the Portal or CLI.
+This deploys the VM and its networking. The tag policy, custom RBAC role, Encryption at Host setting, and cost budget are configured separately through the Portal or CLI.
 
 ## Next steps
 
 - Finish `rbac-role.bicep` as a separate subscription-scoped deployment and pass its role ID into `main.bicep` for the role assignment
-- Codify the cost budget (`Microsoft.Consumption/budgets`) and the Encryption at Host setting (`securityProfile.encryptionAtHost` on the VM resource)
+- Codify the tag-policy assignment, the cost budget (`Microsoft.Consumption/budgets`), and the Encryption at Host setting (`securityProfile.encryptionAtHost` on the VM resource)
 - Compare this hand-written template with an equivalent built from Azure Verified Modules
